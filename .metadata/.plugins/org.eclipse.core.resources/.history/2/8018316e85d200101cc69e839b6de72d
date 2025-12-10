@@ -1,0 +1,19 @@
+spring.application.name=jihuarenwu
+server.port=8081
+# DataSource (PostgreSQL)
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.url=jdbc:postgresql://localhost:5432/yanzhengma?currentSchema=jihuarenwu
+spring.datasource.username=postgres
+spring.datasource.password=123456
+
+# MyBatis-Plus
+mybatis-plus.configuration.map-underscore-to-camel-case=true
+mybatis-plus.global-config.db-config.id-type=auto
+
+# Quartz (use memory mode, we manage tasks via custom table)
+spring.quartz.job-store-type=memory
+spring.quartz.auto-startup=true
+spring.quartz.scheduler-name=MyScheduler
+spring.quartz.wait-for-jobs-to-complete-on-shutdown=true
+
+spring.cloud.nacos.discovery.server-addr=172.17.0.4:8848

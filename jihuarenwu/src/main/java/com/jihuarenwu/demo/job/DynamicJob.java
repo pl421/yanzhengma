@@ -1,0 +1,51 @@
+package com.jihuarenwu.demo.job;
+
+
+import org.quartz.Job;
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.jihuarenwu.demo.client.UserServiceClient;
+import com.jihuarenwu.demo.dto.SyncRequest;
+import com.jihuarenwu.demo.util.ApplicationContextProvider;
+
+import java.time.LocalDateTime;
+
+public class DynamicJob implements Job {
+
+    private static final Logger log = LoggerFactory.getLogger(DynamicJob.class);
+
+    @Override
+    public void execute(JobExecutionContext context) throws JobExecutionException {
+        JobDataMap data = context.getMergedJobDataMap();
+        String taskName = data.getString("taskName");
+        String taskGroup = data.getString("taskGroup");
+
+        log.info("✅ 执行任务: {}.{} | 时间: {}", taskGroup, taskName, LocalDateTime.now());
+        // TODO: 调用实际业务逻辑
+
+        try {
+            // 从 Spring 容器获取 Feign Client
+            UserServiceClient client = ApplicationContextProvider.getBean(UserServiceClient.class);
+
+            // 构造请求（可从 JobDataMap 获取参数）
+            Long userId = data.containsKey("userId") ? data.getLong("userId") : 999L;
+            String action = data.containsKey("action") ? data.getString("action") : "scheduled_sync";
+
+            SyncRequest request = new SyncRequest();
+            request.setUserId(userId);
+            request.setAction(action);
+
+            // 调用远程服务
+            client.syncUserAction(request);
+
+            log.info("✅ 成功调用 user-service: userId={}, action={}", userId, action);
+        } catch (Exception e) {
+            log.error("❌ 调用 user-service 失败", e);
+            throw new JobExecutionException(e);
+        }
+    }
+}

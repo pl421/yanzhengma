@@ -1,0 +1,42 @@
+package com.yanzhengma.demo.service.impl;
+
+
+import com.yanzhengma.demo.entity.User;
+import com.yanzhengma.demo.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+/**
+ * 实现 Spring Security 的 UserDetailsService 接口
+ * 用于从数据库加载用户信息，供认证流程使用
+ */
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
+
+	
+    @Autowired
+    private UserService userService;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // 1. 调用业务 Service 从数据库查询用户
+        User user = userService.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("用户不存在: " + username);
+        }
+
+        // 2. 构造 Spring Security 的 UserDetails 对象
+        return org.springframework.security.core.userdetails.User
+                .withUsername(user.getUsername())
+                .password(user.getPassword())         // 数据库存储的 BCrypt 加密密码
+                .authorities("ROLE_USER")             // 可扩展为从数据库读取角色
+                .accountExpired(false)
+                .accountLocked(false)
+                .credentialsExpired(false)
+                .disabled(!user.getEnabled())
+                .build();
+    }
+}

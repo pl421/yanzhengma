@@ -1,0 +1,5 @@
+package com.yanzhengma.demo.config;
+
+public class MyMetaObjectHandler {
+
+}

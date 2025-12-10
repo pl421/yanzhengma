@@ -1,0 +1,15 @@
+package com.jihuarenwu.demo.client;
+
+//src/main/java/com/jihuarenwu/demo/client/UserServiceClient.java
+
+import com.jihuarenwu.demo.dto.SyncRequest;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+@FeignClient(name = "yanzhengma")
+public interface UserServiceClient {
+
+ @PostMapping("/api/user/sync")
+ void syncUserAction(@RequestBody SyncRequest request);
+}

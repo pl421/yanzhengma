@@ -1,0 +1,17 @@
+package com.yanzhengma.demo.config;
+
+//仅适用于 MyBatis-Plus 3.3.x 及以下
+package com.example.yourproject.config;
+
+import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class MybatisPlusConfig {
+
+ @Bean
+ public PaginationInterceptor paginationInterceptor() {
+     return new PaginationInterceptor();
+ }
+}

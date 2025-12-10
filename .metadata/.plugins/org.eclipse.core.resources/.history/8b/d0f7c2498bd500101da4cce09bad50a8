@@ -1,0 +1,36 @@
+package com.yanzhengma.demo.controller;
+
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/code")
+public class CodeGeneratorController {
+
+    @PostMapping("/generate")
+    public ResponseEntity<?> generateCode(@RequestBody Map<String, String> request) {
+        String dbName = request.get("dbName");
+        if (dbName == null || dbName.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "数据库名不能为空"));
+        }
+
+        try {
+            // 动态配置数据源（示例：假设你有多个数据库）
+            // 实际中你可能需要从配置中心或固定模板获取 JDBC URL
+            String jdbcUrl = "jdbc:mysql://localhost:3306/" + dbName + "?useUnicode=true&characterEncoding=utf8";
+
+            // 执行 MyBatis-Plus 代码生成
+            MyBatisPlusCodeGenerator.generate(jdbcUrl, "root", "your_password", dbName);
+
+            return ResponseEntity.ok(Map.of("message", "代码已生成到项目目录: src/main/java/com/example/generated"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("message", "生成失败: " + e.getMessage()));
+        }
+    }
+}

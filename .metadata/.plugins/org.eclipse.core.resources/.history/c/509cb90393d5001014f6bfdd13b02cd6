@@ -1,0 +1,58 @@
+package com.yanzhengma.demo.utils;
+
+
+
+import com.baomidou.mybatisplus.generator.AutoGenerator;
+import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
+import com.baomidou.mybatisplus.generator.config.GlobalConfig;
+import com.baomidou.mybatisplus.generator.config.PackageConfig;
+import com.baomidou.mybatisplus.generator.config.StrategyConfig;
+import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
+
+//MyBatisPlusCodeGenerator.java
+public class MyBatisPlusCodeGenerator {
+
+ public static void generate(String jdbcUrl, String username, String password, String tableName) {
+
+	// 1. 配置数据源
+	 DataSourceConfig dataSourceConfig = new DataSourceConfig.Builder(
+			 jdbcUrl,
+			 username,
+			 password
+	 ).build();
+	 AutoGenerator generator = new AutoGenerator(dataSourceConfig); 
+	 generator.setTemplateEngine(new FreemarkerTemplateEngine());
+     // 数据源配置
+//     DataSourceConfig.Builder dsc = new DataSourceConfig.Builder(jdbcUrl, username, password);
+//     generator.dataSource(dsc.build());
+
+     // 全局配置
+     GlobalConfig.Builder globalConfig = new GlobalConfig.Builder()
+             .outputDir(System.getProperty("user.dir") + "/src/main/java") // 输出到当前项目
+             .author("testName")
+             .enableSwagger() // 可选
+             .commentDate("yyyy-MM-dd");
+     generator.global(globalConfig.build());
+
+     // 包配置
+     PackageConfig.Builder packageConfig = new PackageConfig.Builder()
+             .parent("com.example.generated." + tableName)
+             .entity("entity")
+             .mapper("mapper")
+             .service("service")
+             .controller("controller");
+     generator.packageInfo(packageConfig.build());
+
+     // 策略配置
+     StrategyConfig strategyConfig = new StrategyConfig.Builder()
+    		 .addInclude(tableName)
+             .entityBuilder().enableLombok()
+             .serviceBuilder()
+             .controllerBuilder().enableRestStyle()
+             .build();
+     generator.strategy(strategyConfig);
+
+     // 执行生成
+     generator.execute();
+ }
+}

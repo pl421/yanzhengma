@@ -1,0 +1,22 @@
+package com.yanzhengma.demo;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import com.yanzhengma.demo.entity.User;
+import com.yanzhengma.demo.service.UserService;
+
+@SpringBootTest
+class YanzhengmaApplicationTests {
+	@Autowired
+	UserService userService;
+	
+	@Test
+	void contextLoads() {
+		User user= new User();
+		userService.getById(8L);
+		
+	}
+
+}

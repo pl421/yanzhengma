@@ -1,0 +1,67 @@
+package com.jihuarenwu.demo.service;
+
+
+import com.example.demo.entity.ScheduledTask;
+import com.example.demo.job.DynamicJob;
+import com.example.demo.mapper.ScheduledTaskMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.quartz.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import java.util.List;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class TaskScheduleService {
+
+    private final Scheduler scheduler;
+    private final ScheduledTaskMapper taskMapper;
+
+    @PostConstruct
+    public void initTasks() throws SchedulerException {
+        List<ScheduledTask> tasks = taskMapper.selectList(
+            new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<ScheduledTask>()
+                .eq("status", "ACTIVE")
+        );
+        for (ScheduledTask task : tasks) {
+            addTaskToScheduler(task);
+        }
+        log.info("✅ 已加载 {} 个定时任务", tasks.size());
+    }
+
+    public void addTaskToScheduler(ScheduledTask task) throws SchedulerException {
+        JobDataMap dataMap = new JobDataMap();
+        dataMap.put("taskName", task.getTaskName());
+        dataMap.put("taskGroup", task.getTaskGroup());
+
+        JobDetail job = JobBuilder.newJob(DynamicJob.class)
+                .withIdentity(task.getTaskName(), task.getTaskGroup())
+                .usingJobData(dataMap)
+                .build();
+
+        CronScheduleBuilder cronSchedule = CronScheduleBuilder.cronSchedule(task.getCronExpression());
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity(task.getTaskName(), task.getTaskGroup())
+                .withSchedule(cronSchedule)
+                .build();
+
+        scheduler.scheduleJob(job, trigger);
+    }
+
+    public void removeTaskFromScheduler(String taskName, String taskGroup) throws SchedulerException {
+        scheduler.deleteJob(JobKey.jobKey(taskName, taskGroup));
+    }
+
+    public void pauseTask(String taskName, String taskGroup) throws SchedulerException {
+        scheduler.pauseJob(JobKey.jobKey(taskName, taskGroup));
+    }
+
+    public void resumeTask(String taskName, String taskGroup) throws SchedulerException {
+        scheduler.resumeJob(JobKey.jobKey(taskName, taskGroup));
+    }
+}

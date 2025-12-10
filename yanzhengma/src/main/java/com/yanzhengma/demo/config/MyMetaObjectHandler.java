@@ -1,0 +1,29 @@
+package com.yanzhengma.demo.config;
+
+import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import org.apache.ibatis.reflection.MetaObject;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+
+@Component
+public class MyMetaObjectHandler implements MetaObjectHandler {
+
+ @Override
+ public void insertFill(MetaObject metaObject) {
+     // 插入时填充
+     this.strictInsertFill(metaObject, "createdAt", LocalDateTime.class, LocalDateTime.now());
+     this.strictInsertFill(metaObject, "updatedAt", LocalDateTime.class, LocalDateTime.now());
+     this.strictInsertFill(metaObject, "version", Integer.class, 1);
+     this.strictInsertFill(metaObject, "deleted", Integer.class, 0);
+     // createdBy 和 updatedBy 需要从上下文获取（注册时用 userId 本身）
+     // 这里先留空，我们在 Service 中手动设置 createdBy/updatedBy
+ }
+
+ @Override
+ public void updateFill(MetaObject metaObject) {
+     // 更新时只填充 updated 字段
+     this.strictUpdateFill(metaObject, "updatedAt", LocalDateTime.class, LocalDateTime.now());
+     // updatedBy 由业务层设置（如登录用户ID）
+ }
+}

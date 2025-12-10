@@ -1,0 +1,12 @@
+package com.yanzhengma.demo.mapper;
+
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.yanzhengma.demo.entity.User;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface UserMapper extends BaseMapper<User> {
+    // 可扩展自定义查询，例如：
+    // User selectByUserId(String userId);
+}

@@ -1,0 +1,5 @@
+package com.jihuarenwu.demo.client;
+
+public class UserServiceClient {
+
+}

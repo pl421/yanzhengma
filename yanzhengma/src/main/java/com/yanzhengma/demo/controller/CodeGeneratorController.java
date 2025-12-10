@@ -1,0 +1,65 @@
+package com.yanzhengma.demo.controller;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.yanzhengma.demo.dto.GenerateCodeRequest;
+import com.yanzhengma.demo.utils.MyBatisPlusCodeGenerator;
+
+@RestController
+@RequestMapping("/api/code")
+public class CodeGeneratorController {
+     @Value("${spring.datasource.url}")
+	 private String jdbcUrl;
+	
+	 @Value("${spring.datasource.username}")
+	 private String username;
+
+	 @Value("${spring.datasource.password}")
+	 private String password;
+    @PostMapping("/generate")
+    public ResponseEntity<?> generateCode(@RequestBody GenerateCodeRequest request) {
+
+    	String schema = request.getSchema();
+        List<String> tableNames = request.getTableNames();
+
+        try {
+            // 动态配置数据源（示例：假设你有多个数据库）
+            // 实际中你可能需要从配置中心或固定模板获取 JDBC URL
+//            String jdbcUrl = "jdbc:mysql://localhost:3306/" + dbName + "?useUnicode=true&characterEncoding=utf8";
+        	String jdbcUrlWithSchema = replaceCurrentSchema(jdbcUrl, schema);
+            // 执行 MyBatis-Plus 代码生成
+            MyBatisPlusCodeGenerator.generate(jdbcUrlWithSchema, username, password, tableNames);
+
+            return ResponseEntity.ok(Map.of("message", "代码已生成到项目目录: src/main/java/com/example/generated"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("message", "生成失败: " + e.getMessage()));
+        }
+    }
+    /**
+     * 替换 JDBC URL 中的 currentSchema 参数
+     * 输入: jdbc:postgresql://.../db?currentSchema=old&other=params
+     * 输出: jdbc:postgresql://.../db?currentSchema=new&other=params
+     */
+    private String replaceCurrentSchema(String url, String newSchema) {
+        if (url.contains("currentSchema=")) {
+            // 替换已有的 currentSchema=...
+            return url.replaceAll("currentSchema=[^&]*", "currentSchema=" + newSchema);
+        } else {
+            // 没有 currentSchema，追加
+            if (url.contains("?")) {
+                return url + "&currentSchema=" + newSchema;
+            } else {
+                return url + "?currentSchema=" + newSchema;
+            }
+        }
+    }
+}

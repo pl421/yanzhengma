@@ -1,0 +1,5 @@
+package com.yanzhengma.demo.dto;
+
+public class GenerateCodeRequest {
+
+}

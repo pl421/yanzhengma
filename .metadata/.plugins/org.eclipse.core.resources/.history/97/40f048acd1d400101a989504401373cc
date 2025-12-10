@@ -1,0 +1,61 @@
+package com.yanzhengma.demo.controller;
+
+import com.yanzhengma.demo.dto.LoginRequest;
+import com.yanzhengma.demo.dto.RegisterDTO;
+import com.yanzhengma.demo.service.UserService;
+
+import javax.validation.Valid;
+
+//import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/auth")
+//@CrossOrigin(origins = "http://localhost:5173") 
+public class AuthController {
+
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @PostMapping("/register")
+    public String register(@Valid @RequestBody RegisterDTO dto) {
+        userService.register(dto);
+        return "注册成功";
+    }
+    
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequest request) {
+        try {
+            // 验证用户名密码（触发 Spring Security 的认证流程）
+            Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword())
+            );
+
+            // 生成 JWT
+//            String token = JwtUtil.generateToken(auth.getName());
+//            
+//            return ResponseEntity.ok(Map.of(
+//                "success", true,
+//                "token", token,
+//                "message", "登录成功"
+//            ));
+        	return "123";
+        } catch (BadCredentialsException e) {
+//            return ResponseEntity.status(401).body(Map.of(
+//                "success", false,
+//                "message", "用户名或密码错误"
+//            ));
+        }
+        return "123";
+    }
+}

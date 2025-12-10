@@ -1,0 +1,45 @@
+package com.yanzhengma.demo.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.yanzhengma.demo.dto.SyncRequest;
+import com.yanzhengma.demo.service.UserService;
+
+//在 user-service 项目中
+@RestController
+@CrossOrigin(origins = "http://localhost:8081")
+public class UserController {
+	@Autowired
+    private UserService userService;
+ @PostMapping("/api/user/sync")
+ public void handleSync(@RequestBody SyncRequest request) {
+     System.out.println("收到同步请求: userId=" + request.getUserId() + ", action=" + request.getAction());
+     // 实际业务逻辑...
+ }
+ @GetMapping
+ public Map<String, Object> getUserList(
+         @RequestParam(defaultValue = "1") int page,
+         @RequestParam(defaultValue = "10") int pageSize) {
+
+     Page<User> userPage = new Page<>(page, pageSize);
+     IPage<User> resultPage = userService.page(userPage);
+
+     // 构造响应：只返回必要字段（可选：手动过滤 password）
+     // MyBatis-Plus 查询会包含 password，建议在 DTO 中处理，但这里简单处理：
+     resultPage.getRecords().forEach(u -> u.setPassword(null));
+
+     Map<String, Object> data = new HashMap<>();
+     data.put("list", resultPage.getRecords());
+     data.put("total", resultPage.getTotal());
+
+     Map<String, Object> response = new HashMap<>();
+     response.put("code", 200);
+     response.put("data", data);
+     return response;
+ }
+}

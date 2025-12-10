@@ -1,0 +1,20 @@
+package com.yanzhengma.demo.dto;
+
+import lombok.Data;
+
+@Data
+public class RegisterDTO {
+ private String userId;      // 对应前端 user_id
+
+ private String userName;    // user_name
+
+ private String password;
+
+ private String phone;
+
+ private String email;
+
+ private String captcha;     // 前端传的 captcha
+
+ private String uuid;        // 验证码唯一标识
+}

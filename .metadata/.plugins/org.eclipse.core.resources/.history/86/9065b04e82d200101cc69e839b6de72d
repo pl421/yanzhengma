@@ -1,0 +1,5 @@
+package com.jihuarenwu.demo.entity;
+
+public class SyncRequest {
+
+}

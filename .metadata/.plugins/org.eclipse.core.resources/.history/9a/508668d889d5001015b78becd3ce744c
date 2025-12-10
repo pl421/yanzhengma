@@ -1,0 +1,47 @@
+package com.yanzhengma.demo.utils;
+
+//MyBatisPlusCodeGenerator.java
+public class MyBatisPlusCodeGenerator {
+
+ public static void generate(String jdbcUrl, String username, String password, String dbName) {
+     AutoGenerator generator = new AutoGenerator();
+
+     // 数据源配置
+     DataSourceConfig.Builder dsc = new DataSourceConfig.Builder(jdbcUrl, username, password);
+     generator.dataSource(dsc.build());
+
+     // 全局配置
+     GlobalConfig.Builder globalConfig = new GlobalConfig.Builder()
+             .outputDir(System.getProperty("user.dir") + "/src/main/java") // 输出到当前项目
+             .author("YourName")
+             .enableSwagger() // 可选
+             .fileOverride()
+             .commentDate("yyyy-MM-dd");
+     generator.global(globalConfig.build());
+
+     // 包配置
+     PackageConfig.Builder packageConfig = new PackageConfig.Builder()
+             .parent("com.example.generated." + dbName)
+             .entity("entity")
+             .mapper("mapper")
+             .service("service")
+             .controller("controller");
+     generator.packageInfo(packageConfig.build());
+
+     // 策略配置
+     StrategyConfig.Builder strategyConfig = new StrategyConfig.Builder()
+             .addInclude("*") // 生成所有表
+             .entityBuilder()
+                 .enableLombok()
+                 .logicDeleteColumnName("deleted")
+             .controllerBuilder()
+                 .enableRestStyle()
+             .mapperBuilder()
+                 .enableMapperAnnotation()
+                 .build();
+     generator.strategy(strategyConfig.build());
+
+     // 执行生成
+     generator.execute();
+ }
+}

@@ -1,0 +1,5 @@
+package com.jihuarenwu.demo.entiry;
+
+public class ScheduledTask {
+
+}

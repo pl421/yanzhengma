@@ -1,0 +1,29 @@
+package com.yanzhengma.demo;
+
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.web.bind.annotation.CrossOrigin;
+
+@CrossOrigin(origins = "http://localhost:5173") 
+@MapperScan("com.yanzhengma.demo.mapper")
+@SpringBootApplication
+public class YanzhengmaApplication {
+
+	public static void main(String[] args) {
+		// 先创建 SpringApplication 实例
+        SpringApplication app = new SpringApplication(YanzhengmaApplication.class);
+        
+        // 启动前获取环境（注意：此时还没 refresh，但能读配置文件）
+        var env = app.getEnvironment();
+        String checkEnabled = env.getProperty("spring.sql.init.dependency-check-enabled");
+        System.out.println(">>> [DEBUG] spring.sql.init.dependency-check-enabled = " + checkEnabled);
+
+        // 正式启动
+        app.run(args);
+	}
+
+}

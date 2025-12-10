@@ -1,0 +1,75 @@
+package com.jihuarenwu.demo.controller;
+
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jihuarenwu.demo.entity.ScheduledTask;
+import com.jihuarenwu.demo.mapper.ScheduledTaskMapper;
+import com.jihuarenwu.demo.service.TaskScheduleService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/tasks")
+@RequiredArgsConstructor
+public class TaskController {
+
+    private final ScheduledTaskMapper taskMapper;
+    private final TaskScheduleService scheduleService;
+
+    @GetMapping
+    public List<ScheduledTask> list() {
+        return taskMapper.selectList(null);
+    }
+
+    @PostMapping
+    public ResponseEntity<String> create(@RequestBody ScheduledTask task) throws Exception {
+        if (taskMapper.selectCount(new QueryWrapper<ScheduledTask>().eq("task_name", task.getTaskName())) > 0) {
+            return ResponseEntity.badRequest().body("任务名已存在");
+        }
+        task.setStatus("ACTIVE");
+        task.setCreatedAt(LocalDateTime.now());
+        task.setUpdatedAt(LocalDateTime.now());
+        taskMapper.insert(task);
+
+        scheduleService.addTaskToScheduler(task);
+        return ResponseEntity.ok("创建成功");
+    }
+
+    @PutMapping("/{id}/pause")
+    public ResponseEntity<String> pause(@PathVariable Long id) throws Exception {
+        ScheduledTask task = taskMapper.selectById(id);
+        if (task == null) return ResponseEntity.notFound().build();
+
+        scheduleService.pauseTask(task.getTaskName(), task.getTaskGroup());
+        task.setStatus("PAUSED");
+        task.setUpdatedAt(LocalDateTime.now());
+        taskMapper.updateById(task);
+        return ResponseEntity.ok("已暂停");
+    }
+
+    @PutMapping("/{id}/resume")
+    public ResponseEntity<String> resume(@PathVariable Long id) throws Exception {
+        ScheduledTask task = taskMapper.selectById(id);
+        if (task == null) return ResponseEntity.notFound().build();
+
+        scheduleService.addTaskToScheduler(task);
+        task.setStatus("ACTIVE");
+        task.setUpdatedAt(LocalDateTime.now());
+        taskMapper.updateById(task);
+        return ResponseEntity.ok("已恢复");
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) throws Exception {
+        ScheduledTask task = taskMapper.selectById(id);
+        if (task == null) return ResponseEntity.notFound().build();
+
+        scheduleService.removeTaskFromScheduler(task.getTaskName(), task.getTaskGroup());
+        taskMapper.deleteById(id);
+        return ResponseEntity.ok("已删除");
+    }
+}

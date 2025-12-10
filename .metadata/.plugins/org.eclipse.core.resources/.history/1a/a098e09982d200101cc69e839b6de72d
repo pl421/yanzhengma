@@ -1,0 +1,26 @@
+package com.jihuarenwu.demo.job;
+
+
+import org.quartz.Job;
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.time.LocalDateTime;
+
+public class DynamicJob implements Job {
+
+    private static final Logger log = LoggerFactory.getLogger(DynamicJob.class);
+
+    @Override
+    public void execute(JobExecutionContext context) throws JobExecutionException {
+        JobDataMap data = context.getMergedJobDataMap();
+        String taskName = data.getString("taskName");
+        String taskGroup = data.getString("taskGroup");
+
+        log.info("✅ 执行任务: {}.{} | 时间: {}", taskGroup, taskName, LocalDateTime.now());
+        // TODO: 调用实际业务逻辑
+    }
+}

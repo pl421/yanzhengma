@@ -1,0 +1,7 @@
+package com.jihuarenwu.demo.mapper;
+
+import org.apache.ibatis.annotations.Mapper;
+
+//ScheduledTaskMapper.java
+@Mapper
+public interface ScheduledTaskMapper extends BaseMapper<ScheduledTask> {}
