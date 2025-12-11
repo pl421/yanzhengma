@@ -7,7 +7,7 @@ import { viteMockServe } from 'vite-plugin-mock'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: './', 
+  base: '/yanzhengma/', 
   plugins: [
     vue(),
     vueDevTools(),
