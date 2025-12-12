@@ -6,6 +6,8 @@ import UserList from '@/views/UserList.vue'
 import TaskManager from '@/views/TaskManager.vue'
 import Menu from '@/views/Menu.vue'
 import GenerateCode from '@/views/GenerateCode.vue'
+import ForgotPassword from '@/views/ForgotPassword.vue'
+import ResetPassword from '@/views/ResetPassword.vue'
 
 const routes: RouteRecordRaw[] = [
   { path: '/TaskManager', component: TaskManager },
@@ -19,6 +21,14 @@ const routes: RouteRecordRaw[] = [
   {
   path: '/generateCode',
   component: GenerateCode
+  },
+  {
+  path: '/forgot-password',
+  component: ForgotPassword
+  },
+  {
+    path: '/reset-password',
+  component: ResetPassword
   },
   {
     path: '/menu',
