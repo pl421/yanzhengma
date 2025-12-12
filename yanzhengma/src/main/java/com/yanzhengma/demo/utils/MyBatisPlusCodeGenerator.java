@@ -2,13 +2,17 @@ package com.yanzhengma.demo.utils;
 
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
 import com.baomidou.mybatisplus.generator.config.GlobalConfig;
+import com.baomidou.mybatisplus.generator.config.InjectionConfig;
 import com.baomidou.mybatisplus.generator.config.PackageConfig;
 import com.baomidou.mybatisplus.generator.config.StrategyConfig;
+import com.baomidou.mybatisplus.generator.config.TemplateConfig;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 
 //MyBatisPlusCodeGenerator.java
@@ -46,7 +50,7 @@ public class MyBatisPlusCodeGenerator {
 
      // 策略配置
      StrategyConfig strategyConfig = new StrategyConfig.Builder()
-    		 .addInclude(tableNames)
+    		 .addInclude(tableNames.toArray(new String[0]))
              .entityBuilder().enableLombok()
              .serviceBuilder()
              .controllerBuilder().enableRestStyle()
@@ -54,6 +58,12 @@ public class MyBatisPlusCodeGenerator {
      generator.strategy(strategyConfig);
 
      // 执行生成
+     Map<String, String> customFiles = new HashMap<>();
+     customFiles.put("controller", "/templates/controller.java.ftl");
+     InjectionConfig injectionConfig = new InjectionConfig.Builder()
+    	        .customFile(customFiles)
+    	        .build();
+     generator.injection(injectionConfig);
      generator.execute(new FreemarkerTemplateEngine());
  }
 }

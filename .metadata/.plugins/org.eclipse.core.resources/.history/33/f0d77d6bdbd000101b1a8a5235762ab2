@@ -1,9 +1,0 @@
-package com.yanzhengma.demo.service;
-
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.yanzhengma.demo.entity.User;
-import com.yanzhengma.demo.entity.User;
-
-public interface UserService extends IService<User> {
-    void register(User dto);
-}

@@ -1,0 +1,48 @@
+package com.yanzhengma.demo.service.impl;
+
+
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import javax.mail.internet.MimeMessage; // ✅ 注意这里是 javax
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@Service
+public class EmailService {
+
+    @Autowired
+    private JavaMailSender mailSender;
+
+    @Autowired
+    private Configuration freemarkerConfig;
+
+    public void sendPasswordResetEmail(String to, String username, String resetUrl) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(to);
+            helper.setSubject("【系统】请重置您的密码");
+            helper.setFrom("your-system@example.com");
+
+            Map<String, Object> model = new HashMap<>();
+            model.put("username", username);
+            model.put("resetUrl", resetUrl);
+
+            Template template = freemarkerConfig.getTemplate("email/reset-password.ftl");
+            String htmlContent = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
+
+            helper.setText(htmlContent, true); // HTML 邮件
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new RuntimeException("发送邮件失败", e);
+        }
+    }
+}

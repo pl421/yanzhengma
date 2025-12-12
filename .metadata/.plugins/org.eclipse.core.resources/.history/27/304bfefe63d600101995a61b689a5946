@@ -1,0 +1,64 @@
+package ${package.Controller};
+
+import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import ${package.Entity}.${entity};
+import ${package.Service}.${table.serviceName};
+
+<#if restControllerStyle>
+@RestController
+<#else>
+@Controller
+</#if>
+@RequestMapping("<#if package.ModuleName?? && package.ModuleName != "">/${package.ModuleName}</#if>/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>")
+<#if kotlin>
+class ${table.controllerName} {
+<#else>
+public class ${table.controllerName} {
+
+    @Autowired
+    private ${table.serviceName} ${table.serviceName?uncap_first};
+
+    /**
+     * 分页查询
+     */
+    @GetMapping("/page")
+    public ResponseEntity<Page<${entity}>> getPage(Page<${entity}> page) {
+        return ResponseEntity.ok(${table.serviceName?uncap_first}.page(page));
+    }
+
+    /**
+     * 根据ID查询
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<${entity}> getById(@PathVariable("id") ${entity.serialVersionUID???"Long"} id) {
+        return ResponseEntity.ok(${table.serviceName?uncap_first}.getById(id));
+    }
+
+    /**
+     * 新增记录（你自定义的 save 方法）
+     */
+    @PostMapping
+    public ResponseEntity<Boolean> save(@RequestBody ${entity} entity) {
+        return ResponseEntity.ok(${table.serviceName?uncap_first}.save(entity));
+    }
+
+    /**
+     * 更新记录
+     */
+    @PutMapping
+    public ResponseEntity<Boolean> update(@RequestBody ${entity} entity) {
+        return ResponseEntity.ok(${table.serviceName?uncap_first}.updateById(entity));
+    }
+
+    /**
+     * 删除记录
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Boolean> delete(@PathVariable("id") ${entity.serialVersionUID???"Long"} id) {
+        return ResponseEntity.ok(${table.serviceName?uncap_first}.removeById(id));
+    }
+}
+</#if>
