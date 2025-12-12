@@ -1,11 +1,13 @@
 // src/router/index.js
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, RouteRecordRaw,createWebHashHistory } from 'vue-router'
 import Register from '@/views/Register.vue'
 import Login from '@/views/Login.vue'
 import UserList from '@/views/UserList.vue'
 import TaskManager from '@/views/TaskManager.vue'
 import Menu from '@/views/Menu.vue'
 import GenerateCode from '@/views/GenerateCode.vue'
+import ForgotPassword from '@/views/ForgotPassword.vue'
+import ResetPassword from '@/views/ResetPassword.vue'
 
 const routes: RouteRecordRaw[] = [
   { path: '/TaskManager', component: TaskManager },
@@ -21,6 +23,14 @@ const routes: RouteRecordRaw[] = [
   component: GenerateCode
   },
   {
+  path: '/forgot-password',
+  component: ForgotPassword
+  },
+  {
+    path: '/reset-password',
+  component: ResetPassword
+  },
+  {
     path: '/menu',
     component: Menu,
     children: [
@@ -34,7 +44,7 @@ const routes: RouteRecordRaw[] = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes
 })
 

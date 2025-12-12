@@ -37,6 +37,9 @@
         还没有账号？
         <router-link to="/register" style="margin-left: 8px;">立即注册</router-link>
       </a-form-item>
+      <a-form-item style="text-align: center; margin-top: -12px;">
+        <router-link to="/forgot-password">忘记密码？</router-link>
+      </a-form-item>
     </a-form>
   </div>
 </template>
